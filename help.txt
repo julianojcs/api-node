@@ -1,0 +1,96 @@
+Configurations Steps:
+
+1)Git initializing
+> git init
+
+2) NPM initializing
+> npm init -y
+
+3) Typescript installation
+> npm install typescript -D
+
+4) Express installation
+> npm install express
+
+5) Installing declaration file for module 'express'
+> npm install @types/express
+
+6) Criando tsconfig.json (arquivo de configuração do Typescript)
+> npx tsc --init
+    Edit tsconfig.json and enable the lines bellow:
+    "outDir": "./dist",   /* Redirect output structure to the directory. */    
+    "rootDir": "./src",      /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+
+7) Compile project:
+> npx tsc
+
+8) Run project:
+> node dist/server.js
+
+9) Live Build and Load
+> npm install ts-node-dev -D
+
+10) Script config:
+    Edit package.js
+      "scripts": {
+          "dev": "ts-node-dev --inspect --ignore-watch node_modules src/server.ts"
+      },
+    //to run this script, execute "npm run dev"
+    //or
+      "scripts": {
+          "start": "ts-node-dev --inspect --ignore-watch node_modules src/server.ts"
+      },
+    //to run this script, execute "npm start"
+
+11) Installing Knex.js / SQL query builder
+> npm install knex --save
+
+12) Installing sqlite3 / DB
+> npm install sqlite3
+
+13) Executing Knex Migrations to create database
+> npx knex --knexfile knexfile.ts migrate:latest
+
+14) Creating mew Script to run knex migrations:
+    Edit package.js
+    "scripts": {
+        "dev": "ts-node-dev --inspect --ignore-watch node_modules src/server.ts",
+        "knex:migrate": "knex --knexfile knexfile.ts migrate:latest"
+    },
+    //npm run knex:migrate
+
+15) Install "SQLite" Extension on VSCode
+
+16) Knex Seeds - Creating mew Script to run knex seeds:
+    Edit package.js
+    "scripts": {
+        "dev": "ts-node-dev --inspect --ignore-watch node_modules src/server.ts",
+        "knex:migrate": "knex --knexfile knexfile.ts migrate:latest",
+        "knex:seed": "knex --knexfile knexfile.ts seed:run"
+    },
+    // npm run knex:seed
+
+17) Installing cors
+> npm install cors
+
+18) Installing Multer - Images upload
+> npm install multer
+> npm install @types/multer -D
+
+19) Installing Celebrate and Joi
+> npm install celebrate
+    Celebrate is an express middleware function that wraps the joi validation library. This allows you to use this middleware in any single route, or globally, and ensure that all of your inputs are correct before any handler function. The middleware allows you to validate req.params, req.headers, and req.query.
+    Celebrate uses Joi -> joi.dev - Schema description language & data validator for JS
+    Obs: I install only Joi, needs to install @hapi/joi:
+        > npm install @hapi/joi
+
+20) installing bcryptjs to use JWT Authentication
+> npm i bcryptjs
+> npm install @types/bcryptjs -D
+
+21) installation Json Web Token
+> npm i jsonwebtoken
+> npm install @types/jsonwebtoken -D
+
+22) installing  - Gerenciador de Processos
+> npm install pm2@latest -g
