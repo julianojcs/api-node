@@ -5,27 +5,26 @@ import { staticUrl } from '../config'
 class LocationsController {
 
     async index(request: Request, response: Response) {
-        const { city, uf, items } = request.query
+        interface Location {
+            city?: string,
+            uf?: string,
+            items?: string|Array<number>|Array<string>
+        }
+
+        const { city, uf, items }: Location = request.query
+
+        let params: Location = {}
+        if (city) params.city = city
+        if (uf) params.uf = uf
 
         const parsedItems: Number[] = String(items).split(',').map(item => Number(item.trim()))
 
         const locations = await knex('locations')
             .join('location_items', 'locations.id', '=', 'location_items.location_id')
+            .where(params)
             .where(function() {
                 if (items){    
                     this.whereIn('location_items.item_id', parsedItems)
-                }
-            })
-            .where(function() {
-                if (city && uf) {
-                    this.where({
-                        city: String(city),
-                        uf:  String(uf)
-                    })
-                } else if (city && !uf) {
-                    this.where({city: String(city)})
-                } else if (!city && uf) {
-                    this.where({uf: String(uf)})
                 }
             })
             .distinct()
@@ -38,7 +37,6 @@ class LocationsController {
                 .where({'location_items.location_id': locations[i].id})
                 .select('items.*')
                 .then((items) => { 
-                    console.log(items)
                     return items.map((item: any) => {
                         return {
                             id: item.id,
@@ -49,7 +47,7 @@ class LocationsController {
                 })
             locations[i] = {
                 ...locations[i],
-                itemsDB
+                items: itemsDB
             }
         }
         
@@ -96,6 +94,11 @@ class LocationsController {
     }
 
     async create(request: Request, response: Response) {
+        let image: string|null = null
+        if (request.file) {
+            image = staticUrl + request.file.filename
+        }
+
         const {
             name,
             email,
@@ -107,8 +110,9 @@ class LocationsController {
             items
         }: any = request.body
 
+
         const location: object = {
-            image: request.file.filename,
+            image,
             name,
             email,
             whatsapp,

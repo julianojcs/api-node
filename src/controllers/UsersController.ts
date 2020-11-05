@@ -75,7 +75,7 @@ class UsersController {
     }
 
     async update(request: Request, response: Response) {
-        interface objUser {
+        interface User {
             image?: string,
             name?: string,
             email?: string,
@@ -102,18 +102,15 @@ class UsersController {
             image = staticUrl + request.file.filename
         }
         
-        let user: objUser = {}
+        let user: User = {} // let user = <User> {}; // let user = {} as User;
 
         if (image) user.image = image
         if (name) user.name = name
         if (email) user.email = email
         if (phone) user.phone = phone
         if (password) user.password = password
-        if (city) user.image = city
-        if (uf) user.image = uf
-
-        // console.log(user)
-        // return response.json(user)
+        if (city) user.city = city
+        if (uf) user.uf = uf
 
         const rows = await knex('users')
             .where('id', id)
