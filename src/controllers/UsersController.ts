@@ -44,14 +44,60 @@ class UsersController {
         })
     }
     
-    async index(request: Request, response: Response) {
-        const users = await knex('users').select('*').orderBy('name')
+    async find(request: Request, response: Response) {
+        const { id } = request.params
 
-        if (users.length===0) {
-            return response.status(400).json({ message: 'No users available.'})
+        const user = await knex('users').where('id', id).first().timeout(10000)
+
+        if (!user) {
+            return response.status(400).json({ message: `User ${id} not found!`})
         }
 
-        return response.json(users)
+        return response.json(user)
+    }
+
+    async index(request: Request, response: Response) {
+        interface User {
+            image?: string,
+            name?: string,
+            email?: string,
+            phone?: string,
+            city?: string,
+            uf?: string
+        }
+
+        let image: string|undefined = undefined
+
+        const {
+            name,
+            email,
+            phone,
+            city,
+            uf
+        }: any = request.body
+
+        if (request.file) {
+            image = staticUrl + request.file.filename
+        }
+        
+        let user: User = {} // let user = <User> {}; // let user = {} as User;
+
+        if (image) user.image = image
+        if (name) user.name = name
+        if (email) user.email = email
+        if (phone) user.phone = phone
+        if (city) user.city = city
+        if (uf) user.uf = uf
+
+        const rows = await knex('users').where(user).orderBy('name').debug(true)
+
+        if ( rows.length===0 ) {
+            return response.status(400).json({ 
+                message: 'No user found!'
+            })
+        }
+        
+        return response.json(rows)
     }
     
     async delete(request: Request, response: Response) {

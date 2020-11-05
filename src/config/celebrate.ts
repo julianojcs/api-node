@@ -18,7 +18,7 @@ const usersReqRules = {
     body: Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().required().email().label('e-mail'), // .label(name): Overrides the key name in error messages.
-        phone: Joi.string().pattern(new RegExp('^\(\d{2}\)\d{4,5}\-\d{4}$')),
+        phone: Joi.string().min(13).max(14),
         password: Joi.string().min(6).max(32).required(),
         image: Joi.string().pattern(new RegExp('^([a-zA-Z0-9\s_\\.\\-\(\):])+(.gif|.jpg|.jpeg|.png)$')).default('fake-image.png'),
         city: Joi.string().alphanum(),

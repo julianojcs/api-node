@@ -55,7 +55,8 @@ class LocationsController {
         return response.json(locations)
     }
 
-    async show(request: Request, response: Response) {
+    // show
+    async find(request: Request, response: Response) {
         const { id } = request.params
 
         // const location = await knex('locations').where('id', id).first()
