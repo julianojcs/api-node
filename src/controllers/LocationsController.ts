@@ -20,7 +20,7 @@ class LocationsController {
         const parsedItems: Number[] = String(items).split(',').map(item => Number(item.trim()))
 
         const locations = await knex('locations')
-            .join('location_items', 'locations.id', '=', 'location_items.location_id')
+            .leftJoin('location_items', 'locations.id', '=', 'location_items.location_id')
             .where(params)
             .where(function() {
                 if (items){    
@@ -95,6 +95,8 @@ class LocationsController {
     }
 
     async create(request: Request, response: Response) {
+        let serializedItems
+        
         let image: string|null = null
         if (request.file) {
             image = staticUrl + request.file.filename
@@ -111,7 +113,14 @@ class LocationsController {
             items
         }: any = request.body
 
-
+        if ( typeof(items)!=='undefined' ) {
+            // If items is array, return items, else if items is String, return serialized items
+            if ( Array.isArray(items)) {
+                serializedItems = items 
+            } else {
+                serializedItems = items.split(',').map((item: string) => Number(item.trim()))
+            }
+        }
         const location: object = {
             image,
             name,
@@ -128,7 +137,7 @@ class LocationsController {
         const newIds: Array<number> = await transaction('locations').insert(location)
         const location_id: number = newIds[0]
 
-        if (items?.length) { // Same as: if(items && items.length) {
+        if (serializedItems?.length) { // Same as: if(items && items.length) {
             let itemNotFound: number|undefined = undefined
 
             const itemsBd = await transaction('items').select('id')
@@ -137,7 +146,7 @@ class LocationsController {
                 return item.id
             })
             
-            items.forEach((item: number) => {
+            serializedItems.forEach((item: number) => {
                 if(!itemsIdBd.includes(item)) {
                     itemNotFound = item
                 }
@@ -148,7 +157,7 @@ class LocationsController {
                 return response.status(400).json({ message: `Item ${itemNotFound} not found!`})
             }
 
-            const locationItems = items.map((item_id: number) => {
+            const locationItems = serializedItems.map((item_id: number) => {
             // const locationItems = items.map(async (item_id: number) => {
                 // const selectedItem = await transaction('items').where('id', item_id).first()
                 // if (!selectedItem) {
@@ -174,7 +183,21 @@ class LocationsController {
     
     async updateImage(request: Request, response: Response) {
         const { id } = request.params
-        const image: string = request.file.filename
+        let image: string|null = null
+        let fileExtension: string|null = null
+        let list = ['png', 'gif', 'jpg', 'jpeg']
+
+        if (request.file) {
+            image = staticUrl + request.file.filename
+            fileExtension = request.file.mimetype.split('/')[1]
+        } else {
+            return response.status(400).json({ message: `Location ${id} not found!`})
+        }
+
+        if (list.indexOf(fileExtension) < 0) {
+            return response.status(400).json({ message: `File extension "${fileExtension}" not allowed`})
+        }
+        
         const location: any = await knex('locations').where('id', id).first().select('id').timeout(10000)
     
         if (!location) {

@@ -6,7 +6,7 @@ import {
     locationsReqRules as locRules, 
     usersReqRules as usrRules, 
     usersUpdateReqRules as usrUpRules,
-    joiOpts } from './config/celebrate';
+    joiOpts } from './middlewares/celebrate';
 import isAuthenticated from '../src/middlewares/isAuthenticated'
 import LocationsController from './controllers/LocationsController';
 import ItemsController from './controllers/ItemsController';
@@ -26,7 +26,7 @@ routes.get('/items', itemsController.index);
 routes.get('/locations/:id', isAuthenticated, locationsController.find);
 routes.get('/locations', isAuthenticated, locationsController.index);
 routes.post('/locations', upload.single('image'), celebrate(locRules, joiOpts), locationsController.create);
-routes.put('/locations', isAuthenticated, upload.single('image'), locationsController.updateImage);
+routes.put('/locations/:id', isAuthenticated, upload.single('image'), locationsController.updateImage);
 
 routes.get('/users', isAuthenticated, celebrate(usrRules, joiOpts), usersController.index);
 routes.get('/users/:id', isAuthenticated, celebrate(usrRules, joiOpts), usersController.find);
