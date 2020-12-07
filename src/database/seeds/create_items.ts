@@ -4,27 +4,27 @@ export async function seed(knex:Knex) {
     await knex('items').insert([
         {
             title: 'Papéis e Papelão', 
-            image: 'papel.png'
+            image: 'papeis-papelao.svg'
         },
         {
             title: 'Vidros e Lâmpadas', 
-            image: 'vidro.png'
+            image: 'lampadas.svg'
         },
         {
             title: 'Óleo de Cozinha', 
-            image: 'oleo.png'
+            image: 'oleo.svg'
         },
         {
             title: 'Resíduos Orgânicos', 
-            image: 'organico.png'
+            image: 'organicos.svg'
         },
         {
             title: 'Baterias e Pilhas', 
-            image: 'bateria.png'
+            image: 'baterias.svg'
         },
         {
             title: 'Eletrônicos', 
-            image: 'eletronico.png'
+            image: 'eletronicos.svg'
         }
     ])
 }
